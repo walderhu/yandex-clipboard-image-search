@@ -59,6 +59,37 @@ p {
   object-fit: contain;
 }
 
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.primary {
+  flex: 1;
+  background: #fc3f1d;
+  color: white;
+  font-weight: 700;
+}
+
+.secondary {
+  background: #e7eaf0;
+  color: #171717;
+}
+
 .hidden {
   display: none;
 }
@@ -78,4 +109,8 @@ p {
     border-color: #3c4043;
   }
 
+  .secondary {
+    background: #303134;
+    color: #f1f3f4;
+  }
 }

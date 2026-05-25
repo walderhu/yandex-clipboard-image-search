@@ -4,10 +4,15 @@ const YANDEX_TEXT_URL = "https://ya.ru/search/?text=";
 
 const statusEl = document.querySelector("#status");
 const previewEl = document.querySelector("#preview");
+const pasteButton = document.querySelector("#paste");
+const openYaButton = document.querySelector("#openYa");
 
-run();
+setStatus("Нажми кнопку, чтобы прочитать буфер.");
+pasteButton.addEventListener("click", () => run());
+openYaButton.addEventListener("click", () => openTab("https://ya.ru/"));
 
 async function run() {
+  pasteButton.disabled = true;
   setStatus("Reading clipboard...");
   clearPreview();
 
@@ -35,6 +40,8 @@ async function run() {
   } catch (error) {
     console.error(error);
     setStatus(error.message || "Clipboard search failed.");
+  } finally {
+    pasteButton.disabled = false;
   }
 }
 
@@ -44,15 +51,21 @@ async function readClipboard() {
   }
 
   const items = await navigator.clipboard.read();
+  let lastImage = null;
 
-  for (const item of items) {
+  for (let index = 0; index < items.length; index += 1) {
+    const item = items[index];
     const imageType = item.types.find((type) => type.startsWith("image/"));
     if (imageType) {
-      return {
-        kind: "image",
-        blob: await item.getType(imageType)
-      };
+      lastImage = { item, imageType };
     }
+  }
+
+  if (lastImage) {
+    return {
+      kind: "image",
+      blob: await lastImage.item.getType(lastImage.imageType)
+    };
   }
 
   for (const item of items) {
