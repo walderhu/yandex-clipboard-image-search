@@ -6,12 +6,19 @@ const statusEl = document.querySelector("#status");
 const previewEl = document.querySelector("#preview");
 const pasteButton = document.querySelector("#paste");
 const openYaButton = document.querySelector("#openYa");
+let isRunning = false;
 
-setStatus("Нажми кнопку, чтобы прочитать буфер.");
+setStatus("Пробую прочитать буфер...");
 pasteButton.addEventListener("click", () => run());
 openYaButton.addEventListener("click", () => openTab("https://ya.ru/"));
+requestAnimationFrame(() => {
+  pasteButton.focus();
+  setTimeout(() => run({ automatic: true }), 50);
+});
 
-async function run() {
+async function run(options = {}) {
+  if (isRunning) return;
+  isRunning = true;
   pasteButton.disabled = true;
   setStatus("Reading clipboard...");
   clearPreview();
@@ -39,9 +46,14 @@ async function run() {
     throw new Error("Clipboard does not contain an image or text.");
   } catch (error) {
     console.error(error);
-    setStatus(error.message || "Clipboard search failed.");
+    if (options.automatic) {
+      setStatus("Не удалось автоматически. Нажми кнопку вручную.");
+    } else {
+      setStatus(error.message || "Clipboard search failed.");
+    }
   } finally {
     pasteButton.disabled = false;
+    isRunning = false;
   }
 }
 
